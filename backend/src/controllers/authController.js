@@ -46,17 +46,28 @@ const registerUser = async (req, res) => {
 const authUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const cleanEmail = email ? email.trim() : '';
+    console.log('Login attempt:', { email: cleanEmail, password });
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: cleanEmail });
     let isAdmin = false;
 
     if (!user) {
+      console.log('User not found in User collection, checking Admin');
       const Admin = require('../models/Admin');
-      user = await Admin.findOne({ email });
+      user = await Admin.findOne({ email: cleanEmail });
       isAdmin = true;
     }
 
-    if (user && (await user.matchPassword(password))) {
+    if (!user) {
+      console.log('User completely not found');
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const isMatch = await user.matchPassword(password);
+    console.log('Password Match:', isMatch);
+
+    if (user && isMatch) {
       // Update login metadata if it's a regular user
       if (!isAdmin) {
         user.loginMetadata.lastLogin = Date.now();

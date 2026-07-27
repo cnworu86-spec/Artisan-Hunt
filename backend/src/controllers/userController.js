@@ -60,6 +60,66 @@ const getProviders = async (req, res) => {
   }
 };
 
+// @desc    Get user profile
+// @route   GET /api/users/me
+// @access  Private
+const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-passwordHash');
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/users/me
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
+      user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+      
+      if (req.body.providerDetails) {
+        user.providerDetails = { 
+          ...(user.providerDetails ? user.providerDetails.toObject() : {}), 
+          ...req.body.providerDetails 
+        };
+      }
+      
+      if (req.body.location) {
+        user.location = { ...user.location, ...req.body.location };
+      }
+
+      if (req.body.roles && req.body.roles.length > 0) {
+        // Prevent changing to admin
+        const filteredRoles = req.body.roles.filter(r => r !== 'admin' && r !== 'superadmin');
+        if (filteredRoles.length > 0) {
+          user.roles = Array.from(new Set([...user.roles, ...filteredRoles]));
+        }
+      }
+
+      const updatedUser = await user.save();
+
+      res.json(updatedUser);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
-  getProviders
+  getProviders,
+  getUserProfile,
+  updateUserProfile
 };

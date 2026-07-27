@@ -24,10 +24,12 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Error Handler
 app.use((err, req, res, next) => {
+  console.error("Backend Error caught in middleware:", err);
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
     message: err.message,

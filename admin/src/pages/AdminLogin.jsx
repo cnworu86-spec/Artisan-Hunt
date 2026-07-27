@@ -23,6 +23,8 @@ export default function AdminLogin({ onLogin }) {
     setLoading(true);
     try {
       const response = await api.post('/auth/login', { email, password });
+      localStorage.setItem('adminToken', response.data.token);
+      localStorage.setItem('adminData', JSON.stringify(response.data));
       onLogin();
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -39,6 +41,8 @@ export default function AdminLogin({ onLogin }) {
     try {
       // Note: Assumes /auth/register exists. If not, this is a mockup of the flow.
       const response = await api.post('/auth/register', { name, email, password });
+      localStorage.setItem('adminToken', response.data.token);
+      localStorage.setItem('adminData', JSON.stringify(response.data));
       onLogin();
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');

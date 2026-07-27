@@ -11,6 +11,8 @@ const reviewSchema = new mongoose.Schema({
   reviewType: {
     type: String,
     enum: [
+      "client_to_provider",
+      "provider_to_client",
       "service_quality",
       "attitude",
       "communication"

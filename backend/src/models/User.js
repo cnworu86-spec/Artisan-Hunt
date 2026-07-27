@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
   providerDetails: {
     jobTitle: { type: String },
     bio: { type: String },
+    services: [{
+      name: { type: String, required: true },
+      priceType: { type: String, enum: ['Hourly', 'Fixed'], default: 'Hourly' },
+      price: { type: String, required: true }
+    }],
     hourlyRate: { type: Number },
     fixedCharge: { type: Number },
     workingDays: { type: [String] },

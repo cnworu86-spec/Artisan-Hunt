@@ -1,4 +1,5 @@
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 const { db, admin } = require('../firebase/firebaseAdmin');
 
 // @desc    Create new booking request
@@ -28,14 +29,18 @@ const createBooking = async (req, res) => {
       providerId,
       serviceCategory,
       serviceDescription,
-      scheduledDate,
-      scheduledTime,
+      scheduledDate: scheduledDate || 'TBD',
+      scheduledTime: scheduledTime || 'TBD',
       locationSnapshot,
       chatMetadata: {
         firebaseChatRoomId,
         visibleUntil: null
       }
     });
+
+    // Increment booking statistics
+    await User.findByIdAndUpdate(clientId, { $inc: { 'statistics.totalBookingsAsClient': 1 } });
+    await User.findByIdAndUpdate(providerId, { $inc: { 'statistics.totalBookingsAsProvider': 1 } });
 
     res.status(201).json(booking);
   } catch (error) {
@@ -48,7 +53,7 @@ const createBooking = async (req, res) => {
 // @access  Public (should be protected in real app)
 const updateBookingStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, cancellationReason } = req.body;
     
     // Status can be: pending, accepted, in_progress, completed, cancelled, delayed, no_show
     const booking = await Booking.findById(req.params.id);
@@ -58,6 +63,10 @@ const updateBookingStatus = async (req, res) => {
     }
 
     booking.bookingStatus = status;
+
+    if (status === 'cancelled' && cancellationReason) {
+      booking.cancellationReason = cancellationReason;
+    }
 
     // Handle timestamp updates based on status
     if (status === 'in_progress') {
@@ -78,6 +87,46 @@ const updateBookingStatus = async (req, res) => {
   }
 };
 
+// @desc    Update booking description/note
+// @route   PATCH /api/bookings/:id/description
+// @access  Public
+const updateBookingDescription = async (req, res) => {
+  try {
+    const { description } = req.body;
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    booking.serviceDescription = description;
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update booking schedule (time/date)
+// @route   PATCH /api/bookings/:id/schedule
+// @access  Public
+const updateBookingSchedule = async (req, res) => {
+  try {
+    const { scheduledDate, scheduledTime } = req.body;
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    if (scheduledDate) booking.scheduledDate = scheduledDate;
+    if (scheduledTime) booking.scheduledTime = scheduledTime;
+
+    await booking.save();
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get user bookings
 // @route   GET /api/bookings/user/:userId
 // @access  Public
@@ -89,11 +138,77 @@ const getUserBookings = async (req, res) => {
     const bookings = await Booking.find({
       $or: [{ clientId: userId }, { providerId: userId }]
     })
-    .populate('clientId', 'firstName lastName')
-    .populate('providerId', 'firstName lastName providerDetails.jobTitle')
-    .sort({ createdAt: -1 });
+      .populate('providerId', 'firstName lastName providerDetails phoneNumber location')
+      .populate('clientId', 'firstName lastName phoneNumber location')
+      .sort({ createdAt: -1 });
 
     res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Send chat message via Admin SDK (bypassing client auth rules)
+// @route   POST /api/bookings/:id/chat
+// @access  Public
+const sendChatMessage = async (req, res) => {
+  try {
+    const { text, senderId } = req.body;
+    const bookingId = req.params.id;
+
+    if (!text || !senderId) {
+      return res.status(400).json({ message: 'Text and senderId are required' });
+    }
+
+    if (!db) {
+      return res.status(500).json({ message: 'Firebase Realtime Database is not initialized' });
+    }
+
+    const messagesRef = db.ref(`chats/${bookingId}/messages`);
+    const newMessageRef = messagesRef.push();
+    await newMessageRef.set({
+      text: text.trim(),
+      senderId,
+      timestamp: admin.database.ServerValue.TIMESTAMP
+    });
+
+    res.status(201).json({ success: true, messageId: newMessageRef.key });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get chat messages for a booking via Admin SDK
+// @route   GET /api/bookings/:id/chat
+// @access  Public
+const getChatMessages = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+
+    if (!db) {
+      return res.status(500).json({ message: 'Firebase Realtime Database is not initialized' });
+    }
+
+    const snapshot = await db.ref(`chats/${bookingId}/messages`).once('value');
+    const data = snapshot.val();
+
+    if (!data) {
+      return res.json([]);
+    }
+
+    const messages = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    }));
+
+    // Sort by timestamp safely
+    messages.sort((a, b) => {
+      const tA = typeof a.timestamp === 'number' ? a.timestamp : 0;
+      const tB = typeof b.timestamp === 'number' ? b.timestamp : 0;
+      return tA - tB;
+    });
+
+    res.json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -102,5 +217,9 @@ const getUserBookings = async (req, res) => {
 module.exports = {
   createBooking,
   updateBookingStatus,
+  updateBookingSchedule,
+  updateBookingDescription,
+  sendChatMessage,
+  getChatMessages,
   getUserBookings
 };

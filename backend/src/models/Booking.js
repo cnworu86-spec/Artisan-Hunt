@@ -22,7 +22,7 @@ const bookingSchema = new mongoose.Schema({
     default: "pending"
   },
 
-  scheduledDate: { type: Date, required: true },
+  scheduledDate: { type: String, required: true },
   scheduledTime: { type: String, required: true },
 
   actualStartTime: { type: Date },
@@ -46,6 +46,8 @@ const bookingSchema = new mongoose.Schema({
     latitude: { type: Number },
     longitude: { type: Number }
   },
+
+  cancellationReason: { type: String },
 
   chatMetadata: {
     firebaseChatRoomId: { type: String },
