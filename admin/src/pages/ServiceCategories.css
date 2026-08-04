@@ -1,0 +1,84 @@
+.categories-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.btn-add-cat {
+  background: #38BDF8;
+  border: none;
+  color: #0A1912;
+  font-weight: 700;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  transition: opacity 0.2s ease;
+}
+
+.btn-add-cat:hover {
+  opacity: 0.9;
+}
+
+.cat-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-status-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cat-status-pill.active { color: #34D399; }
+.cat-status-pill.disabled { color: #F87171; }
+
+.cat-modal-card {
+  width: 90%;
+  max-width: 500px;
+  background: #0D2818;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.cat-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cat-modal-header h3 {
+  margin: 0;
+  color: #F8FAFC;
+  font-size: 1.1rem;
+}
+
+.cat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cat-form textarea {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #F8FAFC;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  outline: none;
+  font-family: inherit;
+}

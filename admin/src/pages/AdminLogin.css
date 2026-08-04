@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   background: #FDFCF0;
+  padding: 1.5rem;
 }
 
 .login-card {
@@ -40,7 +41,6 @@
   margin: 0;
 }
 
-/* Tabs */
 .auth-tabs {
   display: flex;
   background: #FAF9F6;
@@ -63,17 +63,12 @@
   transition: all 0.15s;
 }
 
-.auth-tab:hover {
-  color: #4B5563;
-}
-
 .auth-tab.active {
   background: #2D728F;
   color: #FFFFFF;
   box-shadow: 0 2px 8px rgba(45, 114, 143, 0.35);
 }
 
-/* Form */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -88,7 +83,7 @@
 
 .form-group label {
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #4B5563;
 }
 
@@ -100,79 +95,40 @@
   color: #1A4731;
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s;
-}
-
-.form-group input::placeholder {
-  color: #94A3B8;
 }
 
 .form-group input:focus {
   border-color: #2D728F;
-  box-shadow: 0 0 0 3px rgba(45, 114, 143, 0.15);
 }
 
 .login-btn {
-  margin-top: 0.5rem;
-  padding: 0.8rem;
   background: #1A4731;
-  color: #fff;
+  color: #FFFFFF;
   border: none;
+  padding: 0.85rem;
   border-radius: 8px;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-}
-
-.login-btn:hover:not(:disabled) {
-  background: #2D728F;
-  transform: translateY(-1px);
-}
-
-.login-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  margin-top: 0.5rem;
 }
 
 .login-error {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #EF4444;
-  padding: 0.65rem 0.875rem;
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  padding: 0.75rem;
   border-radius: 8px;
   font-size: 0.85rem;
+  text-align: center;
 }
 
 .login-success {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #10B981;
-  padding: 0.65rem 0.875rem;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #059669;
+  padding: 0.75rem;
   border-radius: 8px;
   font-size: 0.85rem;
-}
-
-/* Switch link */
-.auth-switch {
   text-align: center;
-  margin: 1.25rem 0 0 0;
-  font-size: 0.83rem;
-  color: #6B7280;
-}
-
-.auth-switch-btn {
-  background: none;
-  border: none;
-  color: #2D728F;
-  font-size: 0.83rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.auth-switch-btn:hover {
-  color: #1A4731;
 }

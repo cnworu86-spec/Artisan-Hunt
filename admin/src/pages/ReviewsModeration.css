@@ -1,0 +1,111 @@
+.reviews-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.metrics-row {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.metric-glass-card {
+  flex: 1;
+  background: rgba(13, 40, 24, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.m-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #F8FAFC;
+}
+
+.m-lbl {
+  font-size: 0.8rem;
+  color: #94A3B8;
+}
+
+.reviews-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.category-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+}
+
+.category-select-wrapper select {
+  background: transparent;
+  border: none;
+  color: #F8FAFC;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.category-select-wrapper select option {
+  background: #0D2818;
+  color: #F8FAFC;
+}
+
+.stars-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.num-rating {
+  font-weight: 700;
+  color: #FBBF24;
+  font-size: 0.85rem;
+}
+
+.comment-text {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #CBD5E1;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.btn-delete-review {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.2s;
+}
+
+.btn-delete-review:hover {
+  background: rgba(239, 68, 68, 0.3);
+}

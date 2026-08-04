@@ -22,4 +22,11 @@ api.interceptors.request.use(
   }
 );
 
+export const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.includes('://') || path.startsWith('data:')) return path;
+  const baseUrl = API_URL.replace('/api', '');
+  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 export default api;

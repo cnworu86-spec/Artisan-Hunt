@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './AdminLogin.css';
 import api from '../api';
-import { Settings } from 'lucide-react';
+import appIcon from '../assets/app-icon.png';
 
 export default function AdminLogin({ onLogin }) {
   const [tab, setTab] = useState('signin');
@@ -39,7 +39,6 @@ export default function AdminLogin({ onLogin }) {
     if (!name.trim()) { setError('Please enter your full name.'); return; }
     setLoading(true);
     try {
-      // Note: Assumes /auth/register exists. If not, this is a mockup of the flow.
       const response = await api.post('/auth/register', { name, email, password });
       localStorage.setItem('adminToken', response.data.token);
       localStorage.setItem('adminData', JSON.stringify(response.data));
@@ -55,7 +54,9 @@ export default function AdminLogin({ onLogin }) {
     <div className="admin-login-container">
       <div className="login-card">
         <div className="login-header">
-          <div className="login-logo"><Settings size={40} color="#C5A059" /></div>
+          <div className="login-logo">
+            <img src={appIcon} alt="App Logo" style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover' }} />
+          </div>
           <h1>Artisan Hunt</h1>
           <p>{tab === 'signin' ? 'Sign in to your account' : 'Create a new account'}</p>
         </div>

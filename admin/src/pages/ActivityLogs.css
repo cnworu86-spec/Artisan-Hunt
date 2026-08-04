@@ -1,0 +1,14 @@
+.logs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.log-action-tag {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}

@@ -8,7 +8,8 @@
 
 body {
   font-family: 'Outfit', sans-serif;
-  background: #FDFCF0; /* Neutral */
-  color: #1A4731; /* Primary */
+  background: #FDFCF0;
+  color: #1A4731;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }

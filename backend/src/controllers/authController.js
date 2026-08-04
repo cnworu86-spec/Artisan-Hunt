@@ -6,7 +6,12 @@ const generateToken = require('../utils/generateToken');
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, phoneNumber, password, roles } = req.body;
+    const { 
+      firstName, lastName, email, phoneNumber, password, roles, 
+      gender, region, address, gpsAddress, profileImage, 
+      ghanaCardNumber, ghanaCardImage, alternativePhoneNumber, emergencyContactName,
+      serviceCategory, jobTitle, bio 
+    } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -20,7 +25,27 @@ const registerUser = async (req, res) => {
       email,
       phoneNumber,
       passwordHash: password, // will be hashed in pre-save hook
-      roles: roles || ['client']
+      roles: roles || ['client'],
+      gender,
+      profileImage,
+      alternativePhoneNumber,
+      emergencyContactName,
+      location: {
+        region,
+        address,
+        gpsAddress
+      },
+      providerDetails: roles && roles.includes('provider') ? {
+        serviceCategory,
+        jobTitle,
+        bio,
+        isAvailable: false
+      } : undefined,
+      verification: {
+        ghanaCardNumberEncrypted: ghanaCardNumber || '',
+        ghanaCardImage: ghanaCardImage || '',
+        verificationStatus: 'pending' // Force pending for all new users
+      }
     });
 
     if (user) {

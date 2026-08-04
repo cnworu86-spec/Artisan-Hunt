@@ -1,73 +1,20 @@
-.reason-cell {
-  max-width: 200px;
-  color: #6B7280;
-  font-size: 0.82rem;
+.reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.report-status-open {
-  background: rgba(251, 191, 36, 0.12);
-  color: #fbbf24;
-}
-
-.report-status-resolved {
-  background: rgba(52, 211, 153, 0.12);
-  color: #34d399;
-}
-
-.report-status-under-review {
-  background: rgba(45, 114, 143, 0.15);
-  color: #2D728F;
-}
-
-/* Resolve modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
+.reports-toolbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
 }
 
-.modal-box {
-  background: #FFFFFF;
-  border: 1px solid #EBE8E0;
-  border-radius: 14px;
-  padding: 1.75rem;
-  width: 420px;
-  max-width: 90vw;
-}
-
-.modal-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1A4731;
-  margin: 0 0 0.5rem 0;
-}
-
-.modal-textarea {
-  width: 100%;
-  background: #FDFCF0;
-  border: 1px solid #EBE8E0;
-  border-radius: 8px;
-  color: #1A4731;
-  font-size: 0.875rem;
-  padding: 0.75rem;
-  resize: vertical;
-  outline: none;
-  box-sizing: border-box;
-  font-family: inherit;
-  margin-bottom: 1.25rem;
-}
-
-.modal-textarea:focus {
-  border-color: #2D728F;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
+.rep-resolution-note {
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 6px;
+  color: #34D399;
+  font-size: 0.75rem;
 }

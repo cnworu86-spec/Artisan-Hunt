@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const ProfileUpdateRequest = require('../models/ProfileUpdateRequest');
 
 // Haversine formula to calculate distance between two coordinates
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -118,8 +119,77 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Update user's push token
+// @route   PUT /api/users/push-token
+// @access  Private
+const updateUserPushToken = async (req, res) => {
+  try {
+    const { pushToken } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.pushToken = pushToken;
+    await user.save();
+    res.json({ success: true, message: 'Push token updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Submit profile update request for admin review
+// @route   POST /api/users/profile-update-request
+// @access  Private
+const submitProfileUpdateRequest = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const previousData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profileImage: user.profileImage,
+      phoneNumber: user.phoneNumber,
+      alternativePhoneNumber: user.alternativePhoneNumber,
+      emergencyContactName: user.emergencyContactName,
+      bio: user.providerDetails?.bio,
+      jobTitle: user.providerDetails?.jobTitle,
+      region: user.location?.region
+    };
+
+    const requestedChanges = req.body;
+
+    const request = await ProfileUpdateRequest.create({
+      userId: user._id,
+      previousData,
+      requestedChanges,
+      status: 'pending'
+    });
+
+    res.status(201).json(request);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get latest profile update request status for logged in user
+// @route   GET /api/users/profile-update-request/me
+// @access  Private
+const getLatestProfileUpdateRequest = async (req, res) => {
+  try {
+    const request = await ProfileUpdateRequest.findOne({ userId: req.user._id })
+      .sort({ createdAt: -1 });
+    res.json(request || null);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getProviders,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  updateUserPushToken,
+  submitProfileUpdateRequest,
+  getLatestProfileUpdateRequest
 };

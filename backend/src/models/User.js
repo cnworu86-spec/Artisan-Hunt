@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phoneNumber: { type: String, required: true },
   alternativePhoneNumber: { type: String },
+  emergencyContactName: { type: String },
   passwordHash: { type: String, required: true },
   authProvider: {
     type: String,
@@ -18,8 +19,10 @@ const userSchema = new mongoose.Schema({
   dateOfBirth: { type: Date },
   profileImage: { type: String },
   roles: { type: [String], default: ["client"] }, // client, provider, admin
+  pushToken: { type: String },
   
   providerDetails: {
+    serviceCategory: { type: String },
     jobTitle: { type: String },
     bio: { type: String },
     services: [{
@@ -34,6 +37,8 @@ const userSchema = new mongoose.Schema({
   },
 
   location: {
+    address: { type: String },
+    gpsAddress: { type: String }, // Ghana postal address format
     region: { type: String },
     latitude: { type: Number },
     longitude: { type: Number }
@@ -44,11 +49,12 @@ const userSchema = new mongoose.Schema({
     ghanaCardImage: { type: String },
     verificationStatus: {
       type: String,
-      enum: ["pending", "verified", "rejected"],
+      enum: ["pending", "verified", "rejected", "resubmission_requested"],
       default: "pending"
     },
     verifiedAt: { type: Date },
-    reviewedByAdmin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }
+    reviewedByAdmin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+    resubmissionNotes: { type: String }
   },
 
   ratings: {

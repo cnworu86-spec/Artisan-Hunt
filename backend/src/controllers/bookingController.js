@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const User = require('../models/User');
 const { db, admin } = require('../firebase/firebaseAdmin');
+const { sendNotificationToUser } = require('../utils/notification');
 
 // @desc    Create new booking request
 // @route   POST /api/bookings
@@ -42,6 +43,19 @@ const createBooking = async (req, res) => {
     await User.findByIdAndUpdate(clientId, { $inc: { 'statistics.totalBookingsAsClient': 1 } });
     await User.findByIdAndUpdate(providerId, { $inc: { 'statistics.totalBookingsAsProvider': 1 } });
 
+    // Send push notification to provider
+    try {
+      const clientUser = await User.findById(clientId);
+      const clientName = clientUser ? `${clientUser.firstName} ${clientUser.lastName}` : 'A client';
+      await sendNotificationToUser(
+        providerId,
+        'New Booking Request!',
+        `${clientName} has requested a booking for ${serviceCategory} service.`
+      );
+    } catch (notifErr) {
+      console.error('[Notification Error] Failed to send booking request notification:', notifErr);
+    }
+
     res.status(201).json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -81,6 +95,48 @@ const updateBookingStatus = async (req, res) => {
     }
 
     await booking.save();
+
+    // Trigger push notifications for status updates
+    try {
+      const clientUser = await User.findById(booking.clientId);
+      const providerUser = await User.findById(booking.providerId);
+      const providerName = providerUser ? `${providerUser.firstName} ${providerUser.lastName}` : 'Artisan';
+      const clientName = clientUser ? `${clientUser.firstName} ${clientUser.lastName}` : 'Client';
+
+      if (status === 'accepted') {
+        await sendNotificationToUser(
+          booking.clientId,
+          'Booking Accepted!',
+          `${providerName} accepted your request for ${booking.serviceCategory}.`
+        );
+      } else if (status === 'completed') {
+        await sendNotificationToUser(
+          booking.clientId,
+          'Booking Completed!',
+          `Your job with ${providerName} is completed. Please leave a review!`
+        );
+      } else if (status === 'cancelled') {
+        const { senderId } = req.body;
+        if (senderId) {
+          if (senderId.toString() === booking.clientId.toString()) {
+            await sendNotificationToUser(
+              booking.providerId,
+              'Booking Cancelled',
+              `${clientName} cancelled the booking request for ${booking.serviceCategory}.`
+            );
+          } else if (senderId.toString() === booking.providerId.toString()) {
+            await sendNotificationToUser(
+              booking.clientId,
+              'Booking Cancelled',
+              `${providerName} cancelled the booking for ${booking.serviceCategory}.`
+            );
+          }
+        }
+      }
+    } catch (notifErr) {
+      console.error('[Notification Error] Failed to send status update notification:', notifErr);
+    }
+
     res.json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -173,6 +229,27 @@ const sendChatMessage = async (req, res) => {
     });
 
     res.status(201).json({ success: true, messageId: newMessageRef.key });
+
+    // Send push notification to message recipient in the background
+    try {
+      const booking = await Booking.findById(bookingId);
+      if (booking) {
+        const recipientId = senderId.toString() === booking.clientId.toString() 
+          ? booking.providerId 
+          : booking.clientId;
+          
+        const senderUser = await User.findById(senderId);
+        const senderName = senderUser ? `${senderUser.firstName} ${senderUser.lastName}` : 'User';
+        
+        await sendNotificationToUser(
+          recipientId,
+          `New message from ${senderName}`,
+          text.trim()
+        );
+      }
+    } catch (notifErr) {
+      console.error('[Notification Error] Failed to send chat message notification:', notifErr);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
