@@ -100,6 +100,7 @@ export default function BookingsCenter() {
                   <th>Artisan / Provider</th>
                   <th>Service Category</th>
                   <th>Status</th>
+                  <th>Earnings</th>
                   <th>Scheduled Date</th>
                   <th>Region</th>
                   <th>Created Date</th>
@@ -133,6 +134,9 @@ export default function BookingsCenter() {
                         <span className={`b-status-pill b-status-${status}`}>
                           {status.replace('_', ' ')}
                         </span>
+                      </td>
+                      <td style={{ color: '#E2E8F0', fontSize: '0.82rem' }}>
+                        {status === 'completed' ? `GH₵ ${b.paymentDetails?.serviceAmount || 0}` : '---'}
                       </td>
                       <td style={{ fontSize: '0.82rem', color: '#CBD5E1' }}>
                         {b.scheduledDate || 'Immediate'}

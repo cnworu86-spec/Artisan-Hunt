@@ -22,7 +22,10 @@ const getProviders = async (req, res) => {
   try {
     const { region, lat, lng, service, maxDistance = 50 } = req.query;
 
-    let query = { roles: { $in: ['provider'] } };
+    let query = { 
+      roles: { $in: ['provider'] },
+      'providerDetails.isAvailable': true
+    };
 
     // Region filtering
     if (region) {
@@ -154,7 +157,9 @@ const submitProfileUpdateRequest = async (req, res) => {
       emergencyContactName: user.emergencyContactName,
       bio: user.providerDetails?.bio,
       jobTitle: user.providerDetails?.jobTitle,
-      region: user.location?.region
+      region: user.location?.region,
+      address: user.location?.address,
+      gpsAddress: user.location?.gpsAddress
     };
 
     const requestedChanges = req.body;

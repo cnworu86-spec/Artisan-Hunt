@@ -11,7 +11,9 @@ const profileUpdateRequestSchema = new mongoose.Schema({
     emergencyContactName: { type: String },
     bio: { type: String },
     jobTitle: { type: String },
-    region: { type: String }
+    region: { type: String },
+    address: { type: String },
+    gpsAddress: { type: String }
   },
   previousData: {
     firstName: { type: String },
@@ -22,7 +24,9 @@ const profileUpdateRequestSchema = new mongoose.Schema({
     emergencyContactName: { type: String },
     bio: { type: String },
     jobTitle: { type: String },
-    region: { type: String }
+    region: { type: String },
+    address: { type: String },
+    gpsAddress: { type: String }
   },
   status: {
     type: String,

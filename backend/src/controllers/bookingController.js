@@ -67,7 +67,7 @@ const createBooking = async (req, res) => {
 // @access  Public (should be protected in real app)
 const updateBookingStatus = async (req, res) => {
   try {
-    const { status, cancellationReason } = req.body;
+    const { status, cancellationReason, earnings } = req.body;
     
     // Status can be: pending, accepted, in_progress, completed, cancelled, delayed, no_show
     const booking = await Booking.findById(req.params.id);
@@ -91,6 +91,12 @@ const updateBookingStatus = async (req, res) => {
       if (booking.actualStartTime) {
         const diffMs = booking.actualEndTime - booking.actualStartTime;
         booking.durationInMinutes = Math.round(diffMs / 60000);
+      }
+      
+      // Save earnings if provided
+      if (earnings !== undefined) {
+        if (!booking.paymentDetails) booking.paymentDetails = {};
+        booking.paymentDetails.serviceAmount = earnings;
       }
     }
 

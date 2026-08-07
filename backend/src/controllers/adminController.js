@@ -64,6 +64,12 @@ const getAnalyticsOverview = async (req, res) => {
     const pendingReports = await Report.countDocuments({ status: { $in: ['pending', 'under_review'] } });
     const resolvedReports = await Report.countDocuments({ status: 'resolved' });
 
+    const earningsAggregation = await Booking.aggregate([
+      { $match: { bookingStatus: 'completed' } },
+      { $group: { _id: null, total: { $sum: "$paymentDetails.serviceAmount" } } }
+    ]);
+    const totalPlatformEarnings = earningsAggregation.length > 0 ? earningsAggregation[0].total : 0;
+
     // Recent Activity feeds
     const recentRegistrations = await User.find({})
       .select('firstName lastName email roles createdAt')
@@ -114,7 +120,8 @@ const getAnalyticsOverview = async (req, res) => {
         totalPendingBookings,
         totalReports,
         pendingReports,
-        resolvedReports
+        resolvedReports,
+        totalPlatformEarnings
       },
       recentActivity: {
         registrations: recentRegistrations,
@@ -846,6 +853,39 @@ const reviewProfileUpdateRequest = async (req, res) => {
         if (changes.region) {
           user.location = user.location || {};
           user.location.region = changes.region;
+          const accraTowns = [
+            'Accra', 'Tema', 'Madina', 'East Legon', 'Spintex', 'Osu', 'Cantonments', 'Dansoman', 
+            'Achimota', 'Adenta', 'Teshie', 'Nungua', 'Kasoa', 'Lapaz', 'Kaneshie', 'Airport Residential', 'Roman Ridge'
+          ];
+          const kumasiTowns = [
+            'Kumasi', 'Obuasi', 'Ejisu', 'Mampong', 'Tafo', 'Suame', 'Asokwa', 'Bantama', 
+            'KNUST/Bomso', 'Ahodwo', 'Santasi', 'Kejetia', 'Asawase', 'Oforikrom'
+          ];
+
+          let coords = { latitude: 6.6666, longitude: -1.6163 }; // default Kumasi
+          if (accraTowns.includes(changes.region)) {
+            coords = { latitude: 5.6037, longitude: -0.1870 };
+          } else if (kumasiTowns.includes(changes.region)) {
+            coords = { latitude: 6.6666, longitude: -1.6163 };
+          } else if (changes.region === 'Takoradi') {
+            coords = { latitude: 4.9016, longitude: -1.7831 };
+          } else if (changes.region === 'Tamale') {
+            coords = { latitude: 9.4008, longitude: -0.8393 };
+          } else if (changes.region === 'Cape Coast') {
+            coords = { latitude: 5.1315, longitude: -1.2795 };
+          } else if (changes.region === 'Sunyani') {
+            coords = { latitude: 7.3349, longitude: -2.3124 };
+          }
+          user.location.latitude = coords.latitude;
+          user.location.longitude = coords.longitude;
+        }
+        if (changes.address) {
+          user.location = user.location || {};
+          user.location.address = changes.address;
+        }
+        if (changes.gpsAddress) {
+          user.location = user.location || {};
+          user.location.gpsAddress = changes.gpsAddress;
         }
         if (changes.bio || changes.jobTitle) {
           user.providerDetails = user.providerDetails || {};

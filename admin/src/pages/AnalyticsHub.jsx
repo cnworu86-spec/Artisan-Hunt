@@ -173,6 +173,11 @@ export default function AnalyticsHub() {
                 <div className="tile-val">{summary.totalPendingBookings || 0}</div>
                 <div className="tile-lbl">Pending Bookings</div>
               </div>
+              <div className="glass-card stat-tile" style={{ borderLeft: '4px solid #38BDF8' }}>
+                <TrendingUp size={24} color="#38BDF8" />
+                <div className="tile-val">GH₵ {summary.totalPlatformEarnings?.toFixed(2) || '0.00'}</div>
+                <div className="tile-lbl">Total Job Value Generated</div>
+              </div>
 
               <div className="glass-card full-width">
                 <h3 className="card-title">Booking Status Distribution</h3>

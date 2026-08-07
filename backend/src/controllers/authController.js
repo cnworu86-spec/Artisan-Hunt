@@ -19,6 +19,30 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    const accraTowns = [
+      'Accra', 'Tema', 'Madina', 'East Legon', 'Spintex', 'Osu', 'Cantonments', 'Dansoman', 
+      'Achimota', 'Adenta', 'Teshie', 'Nungua', 'Kasoa', 'Lapaz', 'Kaneshie', 'Airport Residential', 'Roman Ridge'
+    ];
+    const kumasiTowns = [
+      'Kumasi', 'Obuasi', 'Ejisu', 'Mampong', 'Tafo', 'Suame', 'Asokwa', 'Bantama', 
+      'KNUST/Bomso', 'Ahodwo', 'Santasi', 'Kejetia', 'Asawase', 'Oforikrom'
+    ];
+
+    let coords = { latitude: 6.6666, longitude: -1.6163 }; // default Kumasi
+    if (accraTowns.includes(region)) {
+      coords = { latitude: 5.6037, longitude: -0.1870 };
+    } else if (kumasiTowns.includes(region)) {
+      coords = { latitude: 6.6666, longitude: -1.6163 };
+    } else if (region === 'Takoradi') {
+      coords = { latitude: 4.9016, longitude: -1.7831 };
+    } else if (region === 'Tamale') {
+      coords = { latitude: 9.4008, longitude: -0.8393 };
+    } else if (region === 'Cape Coast') {
+      coords = { latitude: 5.1315, longitude: -1.2795 };
+    } else if (region === 'Sunyani') {
+      coords = { latitude: 7.3349, longitude: -2.3124 };
+    }
+
     const user = await User.create({
       firstName,
       lastName,
@@ -33,7 +57,9 @@ const registerUser = async (req, res) => {
       location: {
         region,
         address,
-        gpsAddress
+        gpsAddress,
+        latitude: coords.latitude,
+        longitude: coords.longitude
       },
       providerDetails: roles && roles.includes('provider') ? {
         serviceCategory,
@@ -95,6 +121,7 @@ const authUser = async (req, res) => {
     if (user && isMatch) {
       // Update login metadata if it's a regular user
       if (!isAdmin) {
+        if (!user.loginMetadata) user.loginMetadata = { loginCount: 0 };
         user.loginMetadata.lastLogin = Date.now();
         user.loginMetadata.loginCount += 1;
       } else {
