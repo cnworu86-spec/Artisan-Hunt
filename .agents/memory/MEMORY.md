@@ -1,0 +1,1 @@
+- [GitHub gitlink replacement](github-gitlink-replacement.md) — Replace orphaned mobile submodules through a Git tree commit; deletion entries need mode 160000.

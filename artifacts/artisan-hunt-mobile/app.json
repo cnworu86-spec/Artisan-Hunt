@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Artisan Hunt Mobile",
+    "slug": "artisan-hunt-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/artisan-hunt-icon.png",
+    "scheme": "artisan-hunt-mobile",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {},
+    "splash": {
+      "backgroundColor": "#F7F5ED",
+      "image": "./assets/images/artisan-hunt-icon.png",
+      "resizeMode": "contain"
+    },
+    "web": {
+      "favicon": "./assets/images/artisan-hunt-icon.png"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
