@@ -14,3 +14,9 @@ When a Replit workspace has its own scaffold history but `origin` points to an e
 **Why:** A force reset can remove the active Replit artifact while a normal pull fails before it can reconcile the two histories.
 
 **How to apply:** Preserve a local backup branch, merge the remote history, inspect the resulting pending push, and do not push the merge automatically if it would add generated workspace files to the user's repository.
+
+For this workspace, GitHub HTTPS pushes do not have a usable password credential; authorized GitHub API writes are the reliable delivery path. The integration proxy is rate-limited to 10 requests per second.
+
+**Why:** A normal `git push` fails with GitHub's password-authentication error, and an unpaced blob upload can be throttled even when OAuth access is valid.
+
+**How to apply:** Never request or use a GitHub password/token from chat. Use the authorized integration, pace blob uploads, move the branch once, fetch the result, and reset the local branch only after verifying the remote tree.
